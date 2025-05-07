@@ -1,0 +1,39 @@
+services:
+  app:
+    build: .
+    container_name: herond-notification
+    ports:
+      - "3000:3000"
+      - "50051:50051"
+    environment:
+      - NODE_ENV=production
+      - REDIS_ENABLED=true
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    networks:
+      - app_network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--requirepass", "12345678@Abc"]
+    environment:
+      - REDIS_PASSWORD=12345678@Abc     
+    networks:
+      - app_network
+
+volumes:
+  redis-data:
+
+networks:
+  app_network:
+    driver: bridge

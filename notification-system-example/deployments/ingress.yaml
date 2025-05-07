@@ -1,0 +1,73 @@
+# WebSocket/HTTP Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: herond-notification-http
+  namespace: herond
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    # CORS configurations
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    # WebSocket configurations
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$binary_remote_addr"
+    # WebSocket upgrade
+    nginx.ingress.kubernetes.io/websocket-services: "herond-notification"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - notification.herond.org
+      secretName: herond-notification-tls
+  rules:
+    - host: notification.herond.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: herond-notification
+                port:
+                  number: 3000
+---
+# GRPC Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: herond-notification-grpc
+  namespace: herond
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - grpc.notification.herond.org
+      secretName: herond-notification-tls
+  rules:
+    - host: grpc.notification.herond.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: herond-notification-grpc
+                port:
+                  number: 50051
+
+
+

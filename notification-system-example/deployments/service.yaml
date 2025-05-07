@@ -1,0 +1,41 @@
+# HTTP Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: herond-notification
+  namespace: herond
+  labels:
+    app: herond-notification
+spec:
+  selector:
+    app: herond-notification
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
+  type: ClusterIP
+---
+# gRPC Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: herond-notification-grpc
+  namespace: herond
+  labels:
+    app: herond-notification
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$binary_remote_addr"
+spec:
+  selector:
+    app: herond-notification
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: 50051
+      protocol: TCP
+  type: ClusterIP
+
+
+

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: herond-notification-config
+  namespace: herond
+data:
+  OIDC_ISSUER: "https://herond.org"
+  OIDC_AUTHORITY: "https://accounts-dev.herond.org"
+  OIDC_JWKS_URL: "https://accounts-dev.herond.org/.well-known/openid-configuration/jwks"
+  OIDC_AUDIENCE: "https://herond.org/resources"
+  NODE_ENV: "production"
+  CORS_ORIGINS: "https://points.herond.org,https://points-dev.herond.org"
+ 
+  ADAPTER_TYPE: "none"
+
+  # Redis Sentinel Configuration 
+  REDIS_HOST: "redis" 
+  REDIS_PREFIX: "herond-notification:"
+  REDIS_PORT: "6379"
+  REDIS_ENABLED: "true"

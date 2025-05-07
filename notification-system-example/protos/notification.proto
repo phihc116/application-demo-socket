@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package herond_notification;
+
+service NotificationService {
+  rpc SendMessage (SendMessageRequest) returns (SendMessageResponse);
+  rpc BroadcastMessage (BroadcastMessageRequest) returns (BroadcastMessageResponse);
+}
+
+message SendMessageRequest {
+  string socketId = 1;
+  string fromServiceName = 2;  
+  string userId = 3;
+  string event = 4;
+  string payload = 5;  
+}
+
+message SendMessageResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message BroadcastMessageRequest {
+  string event = 1;
+  string payload = 2;
+}
+
+message BroadcastMessageResponse {
+  bool success = 1;
+  string message = 2;
+}
